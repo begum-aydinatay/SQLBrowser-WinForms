@@ -1,3 +1,4 @@
+using System.Data;
 using System.Data.SqlClient;
 
 namespace SQLBrowser
@@ -29,7 +30,7 @@ namespace SQLBrowser
                 SqlConnection conn = new SqlConnection(connectionString);
 
                 conn.Open();
-                MessageBox.Show("Connected to SQL Server successfully.");
+                MessageBox.Show("Connected to SQL Server successfully.", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
                 SqlCommand cmd = conn.CreateCommand();
                 cmd.CommandText = "SELECT * FROM SYS.DATABASES";
@@ -102,6 +103,67 @@ namespace SQLBrowser
 
                 conn.Close();
 
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+        }
+
+        private void cmbTables_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            string connectionString = string.Empty;
+            string dbName = cmbDatabases.SelectedItem.ToString();
+
+            if (!string.IsNullOrEmpty(txtUsername.Text) && !string.IsNullOrEmpty(txtPassword.Text))
+            {
+                // SQL Authentication
+                connectionString = string.Format(@"Server={0};Database={1};User Id={2};Password={3}; TrustServerCertificate=True;", txtServerName.Text, dbName, txtUsername.Text, txtPassword.Text);
+            }
+            else
+            {
+                // Windows Authentication
+                connectionString = string.Format(@"Server={0};Database={1};Trusted_Connection=True;Encrypt=false; TrustServerCertificate=True; Integrated Security=True", txtServerName.Text, dbName);
+            }
+
+            try
+            {
+                // List the columns of the selected table
+
+                SqlConnection conn = new SqlConnection(connectionString);
+
+                conn.Open();
+
+                SqlCommand cmd = conn.CreateCommand();
+                cmd.CommandText = string.Format("SELECT COLUMN_NAME FROM {0}.INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = @TableName", dbName);
+                cmd.Parameters.AddWithValue("@TableName", cmbTables.Text);
+
+                clbColumns.Items.Clear();
+
+                SqlDataReader reader = cmd.ExecuteReader();
+
+                while (reader.Read())
+                {
+                    string cName = reader.GetString(0); // get the column names
+                    this.clbColumns.Items.Add(cName);
+                }
+
+                reader.Close();
+                reader.Dispose();
+
+                conn.Close();
+                
+                string query = string.Format("SELECT * FROM {0}", cmbTables.Text);
+                txtQuery.Text = query;
+
+                cmd.CommandText = query;
+                cmd.Parameters.Clear(); 
+
+                SqlDataAdapter adapter = new SqlDataAdapter(cmd);
+                DataTable dt = new DataTable();
+                adapter.Fill(dt);
+                
+                dgvResults.DataSource = dt;
             }
             catch (Exception ex)
             {

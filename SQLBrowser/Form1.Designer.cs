@@ -44,8 +44,22 @@
             toolStripLabel5 = new ToolStripLabel();
             cmbTables = new ToolStripComboBox();
             btnRun = new ToolStripButton();
+            splitContainer1 = new SplitContainer();
+            clbColumns = new CheckedListBox();
+            splitContainer2 = new SplitContainer();
+            txtQuery = new TextBox();
+            dgvResults = new DataGridView();
             toolStrip1.SuspendLayout();
             toolStrip2.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)splitContainer1).BeginInit();
+            splitContainer1.Panel1.SuspendLayout();
+            splitContainer1.Panel2.SuspendLayout();
+            splitContainer1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)splitContainer2).BeginInit();
+            splitContainer2.Panel1.SuspendLayout();
+            splitContainer2.Panel2.SuspendLayout();
+            splitContainer2.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)dgvResults).BeginInit();
             SuspendLayout();
             // 
             // toolStrip1
@@ -142,6 +156,7 @@
             // 
             cmbTables.Name = "cmbTables";
             cmbTables.Size = new Size(150, 28);
+            cmbTables.SelectedIndexChanged += cmbTables_SelectedIndexChanged;
             // 
             // btnRun
             // 
@@ -151,11 +166,82 @@
             btnRun.Size = new Size(58, 25);
             btnRun.Text = "Run";
             // 
+            // splitContainer1
+            // 
+            splitContainer1.Dock = DockStyle.Fill;
+            splitContainer1.Location = new Point(0, 55);
+            splitContainer1.Name = "splitContainer1";
+            // 
+            // splitContainer1.Panel1
+            // 
+            splitContainer1.Panel1.Controls.Add(clbColumns);
+            splitContainer1.Panel1.Padding = new Padding(8);
+            // 
+            // splitContainer1.Panel2
+            // 
+            splitContainer1.Panel2.Controls.Add(splitContainer2);
+            splitContainer1.Panel2.Padding = new Padding(8);
+            splitContainer1.Size = new Size(820, 395);
+            splitContainer1.SplitterDistance = 273;
+            splitContainer1.TabIndex = 2;
+            // 
+            // clbColumns
+            // 
+            clbColumns.Dock = DockStyle.Fill;
+            clbColumns.FormattingEnabled = true;
+            clbColumns.Location = new Point(8, 8);
+            clbColumns.Name = "clbColumns";
+            clbColumns.Size = new Size(257, 379);
+            clbColumns.TabIndex = 0;
+            // 
+            // splitContainer2
+            // 
+            splitContainer2.Dock = DockStyle.Fill;
+            splitContainer2.Location = new Point(8, 8);
+            splitContainer2.Name = "splitContainer2";
+            splitContainer2.Orientation = Orientation.Horizontal;
+            // 
+            // splitContainer2.Panel1
+            // 
+            splitContainer2.Panel1.Controls.Add(txtQuery);
+            // 
+            // splitContainer2.Panel2
+            // 
+            splitContainer2.Panel2.Controls.Add(dgvResults);
+            splitContainer2.Size = new Size(527, 379);
+            splitContainer2.SplitterDistance = 134;
+            splitContainer2.TabIndex = 0;
+            // 
+            // txtQuery
+            // 
+            txtQuery.Dock = DockStyle.Fill;
+            txtQuery.Font = new Font("Consolas", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            txtQuery.Location = new Point(0, 0);
+            txtQuery.Multiline = true;
+            txtQuery.Name = "txtQuery";
+            txtQuery.ScrollBars = ScrollBars.Vertical;
+            txtQuery.Size = new Size(527, 134);
+            txtQuery.TabIndex = 0;
+            // 
+            // dgvResults
+            // 
+            dgvResults.AllowUserToAddRows = false;
+            dgvResults.AllowUserToDeleteRows = false;
+            dgvResults.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            dgvResults.Dock = DockStyle.Fill;
+            dgvResults.Location = new Point(0, 0);
+            dgvResults.Name = "dgvResults";
+            dgvResults.ReadOnly = true;
+            dgvResults.RowHeadersWidth = 51;
+            dgvResults.Size = new Size(527, 241);
+            dgvResults.TabIndex = 0;
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(820, 450);
+            Controls.Add(splitContainer1);
             Controls.Add(toolStrip2);
             Controls.Add(toolStrip1);
             Name = "Form1";
@@ -165,6 +251,16 @@
             toolStrip1.PerformLayout();
             toolStrip2.ResumeLayout(false);
             toolStrip2.PerformLayout();
+            splitContainer1.Panel1.ResumeLayout(false);
+            splitContainer1.Panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)splitContainer1).EndInit();
+            splitContainer1.ResumeLayout(false);
+            splitContainer2.Panel1.ResumeLayout(false);
+            splitContainer2.Panel1.PerformLayout();
+            splitContainer2.Panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)splitContainer2).EndInit();
+            splitContainer2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)dgvResults).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -187,5 +283,10 @@
         private ToolStripLabel toolStripLabel5;
         private ToolStripComboBox cmbTables;
         private ToolStripButton btnRun;
+        private SplitContainer splitContainer1;
+        private CheckedListBox clbColumns;
+        private SplitContainer splitContainer2;
+        private TextBox txtQuery;
+        private DataGridView dgvResults;
     }
 }
