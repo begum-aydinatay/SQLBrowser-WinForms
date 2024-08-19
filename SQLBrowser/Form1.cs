@@ -30,13 +30,35 @@ namespace SQLBrowser
 
                 conn.Open();
                 MessageBox.Show("Connected to SQL Server successfully.");
+
+                SqlCommand cmd = conn.CreateCommand();
+                cmd.CommandText = "SELECT * FROM SYS.DATABASES";
+
+                cmbDatabases.Items.Clear();
+
+                SqlDataReader reader = cmd.ExecuteReader();
+
+                while (reader.Read())
+                {
+                    string dbName = reader.GetString(0);
+                    this.cmbDatabases.Items.Add(dbName);
+                }
+
+                reader.Close();
+                reader.Dispose();
+
                 conn.Close();
-                MessageBox.Show("Connection to SQL Server closed successfully.");
+
             }
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message);
             }
+        }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+            this.txtServerName.Text = @".\SQLEXPRESS";
         }
     }
 }

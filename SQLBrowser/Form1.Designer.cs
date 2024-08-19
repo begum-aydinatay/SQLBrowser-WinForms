@@ -39,10 +39,10 @@
             btnConnect = new ToolStripButton();
             toolStrip2 = new ToolStrip();
             toolStripLabel4 = new ToolStripLabel();
-            tscbDatabases = new ToolStripComboBox();
+            cmbDatabases = new ToolStripComboBox();
             toolStripSeparator2 = new ToolStripSeparator();
             toolStripLabel5 = new ToolStripLabel();
-            tscbTables = new ToolStripComboBox();
+            cmbTables = new ToolStripComboBox();
             btnRun = new ToolStripButton();
             toolStrip1.SuspendLayout();
             toolStrip2.SuspendLayout();
@@ -54,7 +54,7 @@
             toolStrip1.Items.AddRange(new ToolStripItem[] { toolStripLabel1, txtServerName, toolStripLabel2, txtUsername, toolStripLabel3, txtPassword, toolStripSeparator1, btnConnect });
             toolStrip1.Location = new Point(0, 0);
             toolStrip1.Name = "toolStrip1";
-            toolStrip1.Size = new Size(800, 27);
+            toolStrip1.Size = new Size(820, 27);
             toolStrip1.TabIndex = 0;
             toolStrip1.Text = "toolStrip1";
             // 
@@ -67,7 +67,7 @@
             // txtServerName
             // 
             txtServerName.Name = "txtServerName";
-            txtServerName.Size = new Size(100, 27);
+            txtServerName.Size = new Size(150, 27);
             // 
             // toolStripLabel2
             // 
@@ -78,7 +78,7 @@
             // txtUsername
             // 
             txtUsername.Name = "txtUsername";
-            txtUsername.Size = new Size(100, 27);
+            txtUsername.Size = new Size(150, 27);
             // 
             // toolStripLabel3
             // 
@@ -89,7 +89,7 @@
             // txtPassword
             // 
             txtPassword.Name = "txtPassword";
-            txtPassword.Size = new Size(100, 27);
+            txtPassword.Size = new Size(150, 27);
             // 
             // toolStripSeparator1
             // 
@@ -108,10 +108,10 @@
             // toolStrip2
             // 
             toolStrip2.ImageScalingSize = new Size(20, 20);
-            toolStrip2.Items.AddRange(new ToolStripItem[] { toolStripLabel4, tscbDatabases, toolStripSeparator2, toolStripLabel5, tscbTables, btnRun });
+            toolStrip2.Items.AddRange(new ToolStripItem[] { toolStripLabel4, cmbDatabases, toolStripSeparator2, toolStripLabel5, cmbTables, btnRun });
             toolStrip2.Location = new Point(0, 27);
             toolStrip2.Name = "toolStrip2";
-            toolStrip2.Size = new Size(800, 28);
+            toolStrip2.Size = new Size(820, 28);
             toolStrip2.TabIndex = 1;
             toolStrip2.Text = "toolStrip2";
             // 
@@ -121,10 +121,10 @@
             toolStripLabel4.Size = new Size(81, 25);
             toolStripLabel4.Text = "Databases:";
             // 
-            // tscbDatabases
+            // cmbDatabases
             // 
-            tscbDatabases.Name = "tscbDatabases";
-            tscbDatabases.Size = new Size(121, 28);
+            cmbDatabases.Name = "cmbDatabases";
+            cmbDatabases.Size = new Size(121, 28);
             // 
             // toolStripSeparator2
             // 
@@ -137,10 +137,10 @@
             toolStripLabel5.Size = new Size(53, 25);
             toolStripLabel5.Text = "Tables:";
             // 
-            // tscbTables
+            // cmbTables
             // 
-            tscbTables.Name = "tscbTables";
-            tscbTables.Size = new Size(121, 28);
+            cmbTables.Name = "cmbTables";
+            cmbTables.Size = new Size(121, 28);
             // 
             // btnRun
             // 
@@ -154,11 +154,12 @@
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(800, 450);
+            ClientSize = new Size(820, 450);
             Controls.Add(toolStrip2);
             Controls.Add(toolStrip1);
             Name = "Form1";
             Text = "SQL Browser";
+            Load += Form1_Load;
             toolStrip1.ResumeLayout(false);
             toolStrip1.PerformLayout();
             toolStrip2.ResumeLayout(false);
@@ -180,10 +181,10 @@
         private ToolStripButton btnConnect;
         private ToolStrip toolStrip2;
         private ToolStripLabel toolStripLabel4;
-        private ToolStripComboBox tscbDatabases;
+        private ToolStripComboBox cmbDatabases;
         private ToolStripSeparator toolStripSeparator2;
         private ToolStripLabel toolStripLabel5;
-        private ToolStripComboBox tscbTables;
+        private ToolStripComboBox cmbTables;
         private ToolStripButton btnRun;
     }
 }
