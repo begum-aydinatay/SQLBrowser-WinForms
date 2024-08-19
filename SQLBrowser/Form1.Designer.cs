@@ -165,6 +165,7 @@
             btnRun.Name = "btnRun";
             btnRun.Size = new Size(58, 25);
             btnRun.Text = "Run";
+            btnRun.Click += btnRun_Click;
             // 
             // splitContainer1
             // 
@@ -187,12 +188,14 @@
             // 
             // clbColumns
             // 
+            clbColumns.CheckOnClick = true;
             clbColumns.Dock = DockStyle.Fill;
             clbColumns.FormattingEnabled = true;
             clbColumns.Location = new Point(8, 8);
             clbColumns.Name = "clbColumns";
             clbColumns.Size = new Size(257, 379);
             clbColumns.TabIndex = 0;
+            clbColumns.SelectedIndexChanged += clbColumns_SelectedIndexChanged;
             // 
             // splitContainer2
             // 

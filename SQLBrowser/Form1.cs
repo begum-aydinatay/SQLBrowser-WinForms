@@ -10,6 +10,8 @@ namespace SQLBrowser
             InitializeComponent();
         }
 
+
+
         private void btnConnect_Click(object sender, EventArgs e)
         {
             string connectionString = string.Empty;
@@ -152,17 +154,106 @@ namespace SQLBrowser
                 reader.Dispose();
 
                 conn.Close();
-                
+
                 string query = string.Format("SELECT * FROM {0}", cmbTables.Text);
                 txtQuery.Text = query;
 
                 cmd.CommandText = query;
-                cmd.Parameters.Clear(); 
+                cmd.Parameters.Clear();
 
                 SqlDataAdapter adapter = new SqlDataAdapter(cmd);
                 DataTable dt = new DataTable();
                 adapter.Fill(dt);
-                
+
+                dgvResults.DataSource = dt;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+        }
+
+        private void btnRun_Click(object sender, EventArgs e)
+        {
+            string connectionString = string.Empty;
+            string dbName = cmbDatabases.SelectedItem.ToString();
+
+            if (!string.IsNullOrEmpty(txtUsername.Text) && !string.IsNullOrEmpty(txtPassword.Text))
+            {
+                // SQL Authentication
+                connectionString = string.Format(@"Server={0};Database={1};User Id={2};Password={3}; TrustServerCertificate=True;", txtServerName.Text, dbName, txtUsername.Text, txtPassword.Text);
+            }
+            else
+            {
+                // Windows Authentication
+                connectionString = string.Format(@"Server={0};Database={1};Trusted_Connection=True;Encrypt=false; TrustServerCertificate=True; Integrated Security=True", txtServerName.Text, dbName);
+            }
+
+            try
+            {
+                SqlConnection conn = new SqlConnection(connectionString);
+                SqlCommand cmd = conn.CreateCommand();
+                cmd.CommandText = txtQuery.Text;
+
+                DataTable dt = new DataTable();
+                SqlDataAdapter adapter = new SqlDataAdapter(cmd);
+                adapter.Fill(dt);
+
+                dgvResults.DataSource = dt;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+        }
+
+        private void clbColumns_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            string connectionString = string.Empty;
+            string dbName = cmbDatabases.SelectedItem.ToString();
+
+            if (!string.IsNullOrEmpty(txtUsername.Text) && !string.IsNullOrEmpty(txtPassword.Text))
+            {
+                // SQL Authentication
+                connectionString = string.Format(@"Server={0};Database={1};User Id={2};Password={3}; TrustServerCertificate=True;", txtServerName.Text, dbName, txtUsername.Text, txtPassword.Text);
+            }
+            else
+            {
+                // Windows Authentication
+                connectionString = string.Format(@"Server={0};Database={1};Trusted_Connection=True;Encrypt=false; TrustServerCertificate=True; Integrated Security=True", txtServerName.Text, dbName);
+            }
+
+            try
+            {
+                SqlConnection conn = new SqlConnection(connectionString);
+                SqlCommand cmd = conn.CreateCommand();
+
+                string query = string.Empty;
+                string columns = string.Empty;
+
+                if (clbColumns.CheckedItems.Count > 0)
+                {
+                    foreach (object item in clbColumns.CheckedItems)
+                    {
+                        columns += string.Format("[{0}],", item.ToString());
+                    }
+
+                    columns = columns.TrimEnd(',');
+                }
+                else
+                {
+                    columns = "*";
+                }
+
+                query = string.Format("SELECT {0} FROM {1}", columns, cmbTables.Text);
+
+                cmd.CommandText = query;
+                txtQuery.Text = query;
+
+                DataTable dt = new DataTable();
+                SqlDataAdapter adapter = new SqlDataAdapter(cmd);
+                adapter.Fill(dt);
+
                 dgvResults.DataSource = dt;
             }
             catch (Exception ex)
