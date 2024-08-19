@@ -60,5 +60,53 @@ namespace SQLBrowser
         {
             this.txtServerName.Text = @".\SQLEXPRESS";
         }
+
+        private void cmbDatabases_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+            string connectionString = string.Empty;
+            string dbName = cmbDatabases.SelectedItem.ToString();
+
+            if (!string.IsNullOrEmpty(txtUsername.Text) && !string.IsNullOrEmpty(txtPassword.Text))
+            {
+                // SQL Authentication
+                connectionString = string.Format(@"Server={0};Database={1};User Id={2};Password={3}; TrustServerCertificate=True;", txtServerName.Text, dbName, txtUsername.Text, txtPassword.Text);
+            }
+            else
+            {
+                // Windows Authentication
+                connectionString = string.Format(@"Server={0};Database={1};Trusted_Connection=True;Encrypt=false; TrustServerCertificate=True; Integrated Security=True", txtServerName.Text, dbName);
+            }
+
+            try
+            {
+                SqlConnection conn = new SqlConnection(connectionString);
+
+                conn.Open();
+
+                SqlCommand cmd = conn.CreateCommand();
+                cmd.CommandText = "SELECT NAME FROM SYS.TABLES";
+
+                cmbTables.Items.Clear();
+
+                SqlDataReader reader = cmd.ExecuteReader();
+
+                while (reader.Read())
+                {
+                    string tName = reader.GetString(0); // get the table names from the 'Name' column 
+                    this.cmbTables.Items.Add(tName);
+                }
+
+                reader.Close();
+                reader.Dispose();
+
+                conn.Close();
+
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+        }
     }
 }

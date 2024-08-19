@@ -124,7 +124,8 @@
             // cmbDatabases
             // 
             cmbDatabases.Name = "cmbDatabases";
-            cmbDatabases.Size = new Size(121, 28);
+            cmbDatabases.Size = new Size(150, 28);
+            cmbDatabases.SelectedIndexChanged += cmbDatabases_SelectedIndexChanged;
             // 
             // toolStripSeparator2
             // 
@@ -140,7 +141,7 @@
             // cmbTables
             // 
             cmbTables.Name = "cmbTables";
-            cmbTables.Size = new Size(121, 28);
+            cmbTables.Size = new Size(150, 28);
             // 
             // btnRun
             // 
