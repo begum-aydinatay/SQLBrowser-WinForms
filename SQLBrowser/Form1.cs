@@ -10,48 +10,26 @@ namespace SQLBrowser
             InitializeComponent();
         }
 
-
+        private string connectionString = string.Empty;
 
         private void btnConnect_Click(object sender, EventArgs e)
         {
-            string connectionString = string.Empty;
-
-            if (!string.IsNullOrEmpty(txtUsername.Text) && !string.IsNullOrEmpty(txtPassword.Text))
-            {
-                // SQL Authentication
-                connectionString = string.Format(@"Server={0};Database=Master;User Id={1};Password={2}; TrustServerCertificate=True;", txtServerName.Text, txtUsername.Text, txtPassword.Text);
-            }
-            else
-            {
-                // Windows Authentication
-                connectionString = string.Format(@"Server={0};Database=Master;Trusted_Connection=True;Encrypt=false; TrustServerCertificate=True; Integrated Security=True", txtServerName.Text);
-            }
+            CreateConnectionString("Master");
 
             try
             {
-                SqlConnection conn = new SqlConnection(connectionString);
-
-                conn.Open();
-                MessageBox.Show("Connected to SQL Server successfully.", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
-
-                SqlCommand cmd = conn.CreateCommand();
-                cmd.CommandText = "SELECT * FROM SYS.DATABASES";
-
                 cmbDatabases.Items.Clear();
 
-                SqlDataReader reader = cmd.ExecuteReader();
+                SQLHelper helper = new SQLHelper(connectionString);
+                MessageBox.Show("Connected to SQL Server successfully.", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
-                while (reader.Read())
+                helper.Command.CommandText = "SELECT NAME FROM SYS.DATABASES";
+                List<string> results = helper.GetDataList();
+                
+                foreach (string item in results)
                 {
-                    string dbName = reader.GetString(0);
-                    this.cmbDatabases.Items.Add(dbName);
+                    this.cmbDatabases.Items.Add(item);
                 }
-
-                reader.Close();
-                reader.Dispose();
-
-                conn.Close();
-
             }
             catch (Exception ex)
             {
@@ -66,45 +44,21 @@ namespace SQLBrowser
 
         private void cmbDatabases_SelectedIndexChanged(object sender, EventArgs e)
         {
-
-            string connectionString = string.Empty;
             string dbName = cmbDatabases.SelectedItem.ToString();
-
-            if (!string.IsNullOrEmpty(txtUsername.Text) && !string.IsNullOrEmpty(txtPassword.Text))
-            {
-                // SQL Authentication
-                connectionString = string.Format(@"Server={0};Database={1};User Id={2};Password={3}; TrustServerCertificate=True;", txtServerName.Text, dbName, txtUsername.Text, txtPassword.Text);
-            }
-            else
-            {
-                // Windows Authentication
-                connectionString = string.Format(@"Server={0};Database={1};Trusted_Connection=True;Encrypt=false; TrustServerCertificate=True; Integrated Security=True", txtServerName.Text, dbName);
-            }
+            this.CreateConnectionString(dbName);
 
             try
             {
-                SqlConnection conn = new SqlConnection(connectionString);
-
-                conn.Open();
-
-                SqlCommand cmd = conn.CreateCommand();
-                cmd.CommandText = "SELECT NAME FROM SYS.TABLES";
-
                 cmbTables.Items.Clear();
 
-                SqlDataReader reader = cmd.ExecuteReader();
+                SQLHelper helper = new SQLHelper(connectionString);
+                helper.Command.CommandText = "SELECT NAME FROM SYS.TABLES";
+                List<string> results = helper.GetDataList();
 
-                while (reader.Read())
+                foreach (string item in results)
                 {
-                    string tName = reader.GetString(0); // get the table names from the 'Name' column 
-                    this.cmbTables.Items.Add(tName);
+                    this.cmbTables.Items.Add(item);
                 }
-
-                reader.Close();
-                reader.Dispose();
-
-                conn.Close();
-
             }
             catch (Exception ex)
             {
@@ -114,58 +68,31 @@ namespace SQLBrowser
 
         private void cmbTables_SelectedIndexChanged(object sender, EventArgs e)
         {
-            string connectionString = string.Empty;
             string dbName = cmbDatabases.SelectedItem.ToString();
-
-            if (!string.IsNullOrEmpty(txtUsername.Text) && !string.IsNullOrEmpty(txtPassword.Text))
-            {
-                // SQL Authentication
-                connectionString = string.Format(@"Server={0};Database={1};User Id={2};Password={3}; TrustServerCertificate=True;", txtServerName.Text, dbName, txtUsername.Text, txtPassword.Text);
-            }
-            else
-            {
-                // Windows Authentication
-                connectionString = string.Format(@"Server={0};Database={1};Trusted_Connection=True;Encrypt=false; TrustServerCertificate=True; Integrated Security=True", txtServerName.Text, dbName);
-            }
 
             try
             {
                 // List the columns of the selected table
-
-                SqlConnection conn = new SqlConnection(connectionString);
-
-                conn.Open();
-
-                SqlCommand cmd = conn.CreateCommand();
-                cmd.CommandText = string.Format("SELECT COLUMN_NAME FROM {0}.INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = @TableName", dbName);
-                cmd.Parameters.AddWithValue("@TableName", cmbTables.Text);
-
                 clbColumns.Items.Clear();
 
-                SqlDataReader reader = cmd.ExecuteReader();
+                SQLHelper helper = new SQLHelper(connectionString);
+                helper.Command.CommandText = string.Format("SELECT COLUMN_NAME FROM {0}.INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = @TableName", dbName);
+                helper.Command.Parameters.AddWithValue("@TableName", cmbTables.Text);
+                List<string> results = helper.GetDataList();
 
-                while (reader.Read())
+                foreach (string item in results)
                 {
-                    string cName = reader.GetString(0); // get the column names
-                    this.clbColumns.Items.Add(cName);
+                    this.clbColumns.Items.Add(item);
                 }
 
-                reader.Close();
-                reader.Dispose();
-
-                conn.Close();
+                // Apply SELECT query to the selected table
+                helper = new SQLHelper(connectionString); // reset the helper object
 
                 string query = string.Format("SELECT * FROM {0}", cmbTables.Text);
+                helper.Command.CommandText = query;
                 txtQuery.Text = query;
 
-                cmd.CommandText = query;
-                cmd.Parameters.Clear();
-
-                SqlDataAdapter adapter = new SqlDataAdapter(cmd);
-                DataTable dt = new DataTable();
-                adapter.Fill(dt);
-
-                dgvResults.DataSource = dt;
+                dgvResults.DataSource = helper.GetDataTable();
             }
             catch (Exception ex)
             {
@@ -175,59 +102,33 @@ namespace SQLBrowser
 
         private void btnRun_Click(object sender, EventArgs e)
         {
-            string connectionString = string.Empty;
-            string dbName = cmbDatabases.SelectedItem.ToString();
-
-            if (!string.IsNullOrEmpty(txtUsername.Text) && !string.IsNullOrEmpty(txtPassword.Text))
-            {
-                // SQL Authentication
-                connectionString = string.Format(@"Server={0};Database={1};User Id={2};Password={3}; TrustServerCertificate=True;", txtServerName.Text, dbName, txtUsername.Text, txtPassword.Text);
-            }
-            else
-            {
-                // Windows Authentication
-                connectionString = string.Format(@"Server={0};Database={1};Trusted_Connection=True;Encrypt=false; TrustServerCertificate=True; Integrated Security=True", txtServerName.Text, dbName);
-            }
-
             try
             {
-                SqlConnection conn = new SqlConnection(connectionString);
-                SqlCommand cmd = conn.CreateCommand();
-                cmd.CommandText = txtQuery.Text;
+                SQLHelper helper = new SQLHelper(connectionString);
 
-                DataTable dt = new DataTable();
-                SqlDataAdapter adapter = new SqlDataAdapter(cmd);
-                adapter.Fill(dt);
+                helper.Command.CommandText = txtQuery.Text;
 
-                dgvResults.DataSource = dt;
+                dgvResults.DataSource = helper.GetDataTable();
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message);
+                if (connectionString.Equals(string.Empty))
+                {
+                    MessageBox.Show("Please connect to a server.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
+                else
+                {
+                    MessageBox.Show("Please select a database and table to operate on.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
             }
         }
 
         private void clbColumns_SelectedIndexChanged(object sender, EventArgs e)
         {
-            string connectionString = string.Empty;
             string dbName = cmbDatabases.SelectedItem.ToString();
-
-            if (!string.IsNullOrEmpty(txtUsername.Text) && !string.IsNullOrEmpty(txtPassword.Text))
-            {
-                // SQL Authentication
-                connectionString = string.Format(@"Server={0};Database={1};User Id={2};Password={3}; TrustServerCertificate=True;", txtServerName.Text, dbName, txtUsername.Text, txtPassword.Text);
-            }
-            else
-            {
-                // Windows Authentication
-                connectionString = string.Format(@"Server={0};Database={1};Trusted_Connection=True;Encrypt=false; TrustServerCertificate=True; Integrated Security=True", txtServerName.Text, dbName);
-            }
 
             try
             {
-                SqlConnection conn = new SqlConnection(connectionString);
-                SqlCommand cmd = conn.CreateCommand();
-
                 string query = string.Empty;
                 string columns = string.Empty;
 
@@ -245,20 +146,32 @@ namespace SQLBrowser
                     columns = "*";
                 }
 
-                query = string.Format("SELECT {0} FROM {1}", columns, cmbTables.Text);
+                SQLHelper helper = new SQLHelper(connectionString);
 
-                cmd.CommandText = query;
+                query = string.Format("SELECT {0} FROM {1}", columns, cmbTables.Text);
+                helper.Command.CommandText = query;
                 txtQuery.Text = query;
 
-                DataTable dt = new DataTable();
-                SqlDataAdapter adapter = new SqlDataAdapter(cmd);
-                adapter.Fill(dt);
-
-                dgvResults.DataSource = dt;
+                dgvResults.DataSource = helper.GetDataTable();
             }
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message);
+            }
+        }
+
+        // Helper method to create the connection string
+        private void CreateConnectionString(string dbName)
+        {
+            if (!string.IsNullOrEmpty(txtUsername.Text) && !string.IsNullOrEmpty(txtPassword.Text))
+            {
+                // SQL Authentication
+                connectionString = string.Format(@"Server={0};Database={1};User Id={2};Password={3}; TrustServerCertificate=True;", txtServerName.Text, dbName, txtUsername.Text, txtPassword.Text);
+            }
+            else
+            {
+                // Windows Authentication
+                connectionString = string.Format(@"Server={0};Database={1};Trusted_Connection=True;Encrypt=false; TrustServerCertificate=True; Integrated Security=True", txtServerName.Text, dbName);
             }
         }
     }
